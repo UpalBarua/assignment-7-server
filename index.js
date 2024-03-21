@@ -29,6 +29,7 @@ async function run() {
     const donation = db.collection("donation");
     const comments = db.collection("comments");
     const testimonials = db.collection("testimonials");
+    const volunteers = db.collection("volunteers");
 
     // User Registration
     app.post("/api/v1/register", async (req, res) => {
@@ -187,6 +188,36 @@ async function run() {
         res.status(201).json(createdTestimonial);
       } catch (error) {
         res.status(500).json({ message: "Failed to create a new testimonial" });
+      }
+    });
+
+    app.get("/api/v1/volunteers", async (req, res) => {
+      try {
+        const foundVolunteers = await volunteers.find({}).toArray();
+
+        if (!foundVolunteers) {
+          return res.status(404).json({ message: "No volunteers found" });
+        }
+
+        res.status(200).json(foundVolunteers);
+      } catch (error) {
+        res.status(500).json({ message: "something went wrong" });
+      }
+    });
+
+    app.post("/api/v1/volunteers", async (req, res) => {
+      try {
+        const newVolunteer = req.body;
+
+        if (!newVolunteer) {
+          return res.status(400).json({ message: "invalid new volunteer" });
+        }
+
+        const createdVolunteer = await volunteers.insertOne(newVolunteer);
+
+        res.status(201).json(createdVolunteer);
+      } catch (error) {
+        res.status(500).json({ message: "Failed to create a new volunteer" });
       }
     });
 
