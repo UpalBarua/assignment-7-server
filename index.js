@@ -27,6 +27,8 @@ async function run() {
     const db = client.db("hope-sync");
     const users = db.collection("users");
     const donation = db.collection("donation");
+    const comments = db.collection("comments");
+    const testimonials = db.collection("testimonials");
 
     // User Registration
     app.post("/api/v1/register", async (req, res) => {
@@ -127,6 +129,65 @@ async function run() {
       };
       const result = await donation.updateOne(query, updateDoc);
       res.send(result);
+    });
+
+    app.get("/api/v1/comments", async (req, res) => {
+      try {
+        const foundComments = await comments.find({}).toArray();
+
+        if (!foundComments) {
+          return res.status(404).json({ message: "No comments found" });
+        }
+
+        res.status(200).json(foundComments);
+      } catch (error) {
+        res.status(500).json({ message: "something went wrong" });
+      }
+    });
+
+    app.post("/api/v1/comments", async (req, res) => {
+      try {
+        const newComment = req.body;
+
+        if (!newComment) {
+          return res.status(400).json({ message: "invalid new comment" });
+        }
+
+        const createdComment = await comments.insertOne(newComment);
+      } catch (error) {
+        res.status(201).json(createdComment);
+        res.status(500).json({ message: "Failed to create a new comment" });
+      }
+    });
+
+    app.get("/api/v1/testimonials", async (req, res) => {
+      try {
+        const foundTestimonials = await testimonials.find({}).toArray();
+
+        if (!foundTestimonials) {
+          return res.status(404).json({ message: "No testimonials found" });
+        }
+
+        res.status(200).json(foundTestimonials);
+      } catch (error) {
+        res.status(500).json({ message: "something went wrong" });
+      }
+    });
+
+    app.post("/api/v1/testimonials", async (req, res) => {
+      try {
+        const newTestimonial = req.body;
+
+        if (!newTestimonial) {
+          return res.status(400).json({ message: "invalid new testimonial" });
+        }
+
+        const createdTestimonial = await testimonials.insertOne(newTestimonial);
+
+        res.status(201).json(createdTestimonial);
+      } catch (error) {
+        res.status(500).json({ message: "Failed to create a new testimonial" });
+      }
     });
 
     // Start the server
