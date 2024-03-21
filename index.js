@@ -155,8 +155,8 @@ async function run() {
         }
 
         const createdComment = await comments.insertOne(newComment);
-      } catch (error) {
         res.status(201).json(createdComment);
+      } catch (error) {
         res.status(500).json({ message: "Failed to create a new comment" });
       }
     });
